@@ -3,6 +3,8 @@ import os
 
 class Config:
     def __init__(self):
+        self.admin_username = os.environ.get("ADMIN_USERNAME")
+        self.admin_password = os.environ.get("ADMIN_PASSWORD")
         self.offer_token = os.environ.get("OFFER_TOKEN")
         self.offer_url = os.environ.get("OFFER_URL")
         if os.environ.get("ENV", "production") == "development":

@@ -6,10 +6,12 @@ name = "pypi"
 [packages]
 fastapi = "*"
 uvicorn = "*"
-sqlalchemy = "~=1.4.35"
+sqlalchemy = "==1.4.35"
 sqlmodel = "*"
 requests = "*"
 psycopg2 = "*"
+python-jose = "*"
+python-multipart = "*"
 
 [dev-packages]
 mypy = "*"

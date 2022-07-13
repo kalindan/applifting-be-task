@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy import desc
 from sqlmodel import Session, select
 
 from app.models import Product
@@ -61,6 +62,19 @@ class CRUDProduct:
         if not product:
             return False
         return True
+
+    @staticmethod
+    def update_description_by_id(
+        id: int, description: str, session: Session
+    ) -> Product:
+        product = session.get(Product, id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        product.description = description
+        session.add(product)
+        session.commit()
+        session.refresh(product)
+        return product
 
 
 class CRUDOffer:
