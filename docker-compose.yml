@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    container_name: applifting-app
+    environment:
+      ENV: production
+      OFFER_TOKEN: c1287585-083c-4250-99dd-72d9f413106d
+      OFFER_URL: https://applifting-python-excercise-ms.herokuapp.com/api/v1
+      DB_URL: postgresql://postgres:postgrespw@postgres:5432/products_db
+      SECRET_KEY: kajsdfk13dkmn229x3jj3fv0j2
+    command: bash -c 'while !</dev/tcp/postgres/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0 --port 80 --reload'
+    ports:
+      - 8080:80
+    volumes:
+      - .:/app/code
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=postgrespw
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=products_db
+    ports:
+      - 5432:5432
+    volumes:
+      - data:/var/lib/postgresql
+volumes:
+  data:
