@@ -18,7 +18,7 @@ async def on_startup():
 
 
 p = Process(target=offer_caller)
-# p.start()
+p.start()
 
 
 @app.on_event("shutdown")
