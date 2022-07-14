@@ -28,3 +28,4 @@ app/utils/__pycache__/__init__.cpython-310.pyc
 app/utils/__pycache__/utils.cpython-310.pyc
 app/.coverage
 .vscode/settings.json
+app/database.db
