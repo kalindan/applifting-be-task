@@ -8,4 +8,8 @@ class OfferRead(OfferBase):
 
 class ProductRead(ProductBase):
     id: int
+
+
+class ProductReadWithOffers(ProductRead):
+    id: int
     offers: list["OfferRead"] = []

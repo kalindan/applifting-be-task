@@ -7,13 +7,16 @@ from app.auth.auth import jwt_bearer
 from app.db.crud import CRUDOffer, CRUDProduct
 from app.db.database import get_session
 from app.models import Product, ProductRead, ProductWrite
+from app.models.read_models import ProductReadWithOffers
 from app.utils.utils import register_product
 
 router = APIRouter(prefix="/products")
 
 
-@router.get("/{id}", response_model=ProductRead, tags=["Product catalog"])
-def get_product(id: int, session: Session = Depends(get_session)):
+@router.get(
+    "/{id}", response_model=ProductReadWithOffers, tags=["Product catalog"]
+)
+def get_product_with_offers(id: int, session: Session = Depends(get_session)):
     return CRUDProduct.read_by_id(id=id, session=session)
 
 
