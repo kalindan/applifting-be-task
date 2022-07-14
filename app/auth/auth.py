@@ -1,15 +1,42 @@
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta
-from app.config.config import config
-from jose import JWTError, jwt  # type:ignore
-from app.db.database import Session, get_session
 
+from fastapi import HTTPException, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jose import JWTError, jwt  # type:ignore
+
+from app.config.config import config
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1
+ACCESS_TOKEN_EXPIRE_MINUTES = 5
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+class JWTBearer(HTTPBearer):
+    def __init__(self, auto_error: bool = True):
+        super(JWTBearer, self).__init__(auto_error=auto_error)
+
+    async def __call__(self, request: Request):
+        credentials: HTTPAuthorizationCredentials | None = await super(
+            JWTBearer, self
+        ).__call__(request)
+        if credentials:
+            self.validate_token(token=credentials.credentials)
+            return
+        else:
+            raise HTTPException(
+                status_code=403, detail="Invalid authorization code."
+            )
+
+    def validate_token(self, token: str):
+        try:
+            jwt.decode(token, config.secret_key, algorithms=[ALGORITHM])
+        except JWTError:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token",
+            )
+
+
+jwt_bearer = JWTBearer()
 
 
 def generate_token():
@@ -17,16 +44,3 @@ def generate_token():
     to_encode: dict = {"exp": expire}
     encoded_jwt = jwt.encode(to_encode, config.secret_key, algorithm=ALGORITHM)
     return encoded_jwt
-
-
-def validate_token(
-    session: Session = Depends(get_session), token: str = Depends(oauth2_scheme)
-):
-    try:
-        payload = jwt.decode(token, config.secret_key, algorithms=[ALGORITHM])
-    except JWTError:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid token",
-        )
-    return
