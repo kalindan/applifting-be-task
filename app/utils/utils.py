@@ -1,12 +1,14 @@
 import time
-from fastapi import HTTPException
+
 import requests  # type:ignore
+from fastapi import HTTPException
 from sqlmodel import Session
+
 from app.config.config import config
-from app.db.database import engine
 from app.db.crud import CRUDOffer, CRUDProduct
-from app.models.product_model import Product
+from app.db.database import engine
 from app.models.offer_model import Offer
+from app.models.product_model import Product
 
 
 async def register_product(product: Product):
@@ -31,16 +33,17 @@ def offer_caller():
         with Session(engine) as session:
             products: list[Product] = CRUDProduct.read_all(session=session)
             for product in products:
-                response = requests.get(
+                CRUDOffer.delete_all(product_id=product.id, session=session)
+                offers = requests.get(
                     url=f"{config.offer_url}/products/{product.id}/offers",
                     headers={"Bearer": config.offer_token},
-                )
-                offer = response.json()[-1]
-                offer_db = Offer(
-                    price=offer["price"],
-                    items_in_stock=offer["items_in_stock"],
-                    product_id=product.id,
-                )
-                CRUDOffer.create(offer=offer_db, session=session)
-                print(offer_db.json())
+                ).json()
+                for offer in offers:
+                    offer_db = Offer(
+                        id=offer["id"],
+                        price=offer["price"],
+                        items_in_stock=offer["items_in_stock"],
+                        product_id=product.id,
+                    )
+                    CRUDOffer.create(offer=offer_db, session=session)
         time.sleep(60)

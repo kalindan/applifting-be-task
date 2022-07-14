@@ -1,21 +1,22 @@
 import secrets
-from app.config import config
-from app.auth.auth import generate_token
-from app.db.database import Session, get_session
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
+
+from app.auth.auth import generate_token
+from app.config import config
+from app.models.login_model import LoginInfo
 
 router = APIRouter(prefix="/login", tags=["Admin"])
 
 
 @router.post("")
-def login_admin(login_form: OAuth2PasswordRequestForm = Depends()):
+def login_admin(login: LoginInfo):
     correct_username = secrets.compare_digest(
-        login_form.username, config.admin_username
+        login.username, config.admin_username
     )
     correct_password = secrets.compare_digest(
-        login_form.password, config.admin_password
+        login.password, config.admin_password
     )
     if not (correct_username and correct_password):
         raise HTTPException(

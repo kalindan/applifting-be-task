@@ -1,12 +1,9 @@
-from email.policy import default
-
-from sqlmodel import Field
 from .offer_model import OfferBase
 from .product_model import ProductBase
 
 
 class OfferRead(OfferBase):
-    pass
+    id: int
 
 
 class ProductRead(ProductBase):

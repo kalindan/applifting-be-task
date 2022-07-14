@@ -1,11 +1,12 @@
 from fastapi import BackgroundTasks, Body, Depends, HTTPException
-from fastapi.routing import APIRouter
 from fastapi.responses import JSONResponse
+from fastapi.routing import APIRouter
 from sqlmodel import Session
-from app.auth.auth import validate_token
+
+from app.auth.auth import jwt_bearer
 from app.db.crud import CRUDOffer, CRUDProduct
 from app.db.database import get_session
-from app.models import ProductWrite, Product, ProductRead
+from app.models import Product, ProductRead, ProductWrite
 from app.utils.utils import register_product
 
 router = APIRouter(prefix="/products")
@@ -26,7 +27,7 @@ async def create_product(
     product: ProductWrite,
     background_tasks: BackgroundTasks,
     session: Session = Depends(get_session),
-    token: None = Depends(validate_token),
+    jwt: None = Depends(jwt_bearer),
 ):
     if CRUDProduct.is_in_db(name=product.name, session=session):
         raise HTTPException(status_code=406, detail="Product already exists")
@@ -42,7 +43,7 @@ def update_product_description(
     id: int,
     description: str = Body(embed=True),
     session: Session = Depends(get_session),
-    token: None = Depends(validate_token),
+    jwt: None = Depends(jwt_bearer),
 ):
     return CRUDProduct.update_description_by_id(
         id=id, description=description, session=session
@@ -50,10 +51,10 @@ def update_product_description(
 
 
 @router.delete("/{id}", tags=["Edit products"])
-def delete_product_by_id(
+def delete_product(
     id: int,
     session: Session = Depends(get_session),
-    token: None = Depends(validate_token),
+    jwt: None = Depends(jwt_bearer),
 ):
     CRUDProduct.delete_by_id(id=id, session=session)
     CRUDOffer.delete_all(product_id=id, session=session)

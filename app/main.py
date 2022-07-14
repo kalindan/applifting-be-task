@@ -1,8 +1,10 @@
 from multiprocessing import Process
+
 from fastapi import FastAPI
-from app.utils.utils import offer_caller
+
 from app.db import create_db_and_tables
-from app.routers import products, login
+from app.routers import login, products
+from app.utils.utils import offer_caller
 
 app = FastAPI(title="Product aggregator")
 
@@ -16,3 +18,8 @@ p.start()
 @app.on_event("startup")
 async def on_startup():
     create_db_and_tables()
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    p.terminate()
