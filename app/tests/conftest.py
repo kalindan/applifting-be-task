@@ -6,7 +6,6 @@ from sqlmodel.pool import StaticPool
 from app.config.config import config
 from app.db.database import get_session
 from app.main import app
-from app.models import Offer, Product
 from app.models.product_model import ProductWrite
 
 
@@ -34,7 +33,7 @@ def client_fixture(session: Session):
 
 
 @pytest.fixture(name="jwt_token")
-def get_jwt_token(client: TestClient):
+def get_jwt_token_fixture(client: TestClient):
     yield client.post(
         url="/login",
         headers={"Content-Type": "application/json"},
