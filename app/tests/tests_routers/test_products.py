@@ -88,3 +88,38 @@ def test_delete_product(jwt_token: str, client: TestClient):
         json={"description": "Test description edited"},
     )
     assert response.status_code == 404
+
+
+def test_get_product(jwt_token: str, client: TestClient):
+    mock_create_product(jwt_token=jwt_token, client=client)
+    response = client.get(
+        url="/products/1", headers={"Authorization": f"Bearer {jwt_token}"}
+    )
+    data = response.json()
+    assert response.status_code == 200
+    assert data["name"] == "Test product"
+    assert data["description"] == "Test description"
+
+
+def test_get_product_not_existing(jwt_token: str, client: TestClient):
+    mock_create_product(jwt_token=jwt_token, client=client)
+    response = client.get(
+        url="/products/2", headers={"Authorization": f"Bearer {jwt_token}"}
+    )
+    assert response.status_code == 404
+
+
+def test_get_products(jwt_token: str, client: TestClient):
+    mock_create_product(jwt_token=jwt_token, client=client)
+    mock_create_product(
+        jwt_token=jwt_token, client=client, name="Test product 2"
+    )
+    response = client.get(
+        url="/products", headers={"Authorization": f"Bearer {jwt_token}"}
+    )
+    data = response.json()
+    assert response.status_code == 200
+    assert data[0]["name"] == "Test product"
+    assert data[0]["description"] == "Test description"
+    assert data[1]["name"] == "Test product 2"
+    assert data[1]["description"] == "Test description"

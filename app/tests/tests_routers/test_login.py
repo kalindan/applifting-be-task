@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from app.config import config
+from app.config import settings
 
 
 def test_login(client: TestClient):
@@ -8,8 +8,8 @@ def test_login(client: TestClient):
         url="/login",
         headers={"Content-Type": "application/json"},
         json={
-            "username": config.admin_username,
-            "password": config.admin_password,
+            "username": settings.admin_username,
+            "password": settings.admin_password,
         },
     )
     data = response.json()
@@ -24,7 +24,7 @@ def test_login_invalid_credentials(client: TestClient):
         headers={"Content-Type": "application/json"},
         json={
             "username": "invalid",
-            "password": config.admin_password,
+            "password": settings.admin_password,
         },
     )
     data = response.json()
