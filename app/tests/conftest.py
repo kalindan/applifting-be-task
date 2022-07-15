@@ -3,10 +3,10 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-from app.config.config import settings
-from app.db.database import get_session
+from app.config import settings
+from app.db import get_session
 from app.main import app
-from app.models.product_model import ProductWrite
+from app.models import ProductWrite
 
 
 @pytest.fixture(name="session")
