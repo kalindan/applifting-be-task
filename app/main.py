@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from app.db import create_db_and_tables
 from app.routers import login, products
-from app.utils import offer_caller
+from app.utils import get_offers
 
 app = FastAPI(title="Product aggregator")
 
@@ -17,7 +17,7 @@ async def on_startup():
     create_db_and_tables()
 
 
-p = Process(target=offer_caller)
+p = Process(target=get_offers)
 p.start()
 
 
