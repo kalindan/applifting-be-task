@@ -1,7 +1,7 @@
 ## Manual
-'''javascript
+```javascript
 docker-compose up --build
-'''
+```
 ## Product aggregator API
 | Endpoints        | HTTP method | Description                |
 |------------------|-------------|----------------------------|
