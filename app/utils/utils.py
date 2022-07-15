@@ -2,6 +2,7 @@ import time
 
 import requests  # type:ignore
 from fastapi import HTTPException
+from requests import Response
 from sqlmodel import Session
 
 from app.config import settings
@@ -28,22 +29,33 @@ async def register_product(product: Product) -> bool:
     raise HTTPException(status_code=500, detail="Offer ms call error")
 
 
-def offer_caller():
+def get_offers():
     while True:
         with Session(engine) as session:
             products: list[Product] = CRUDProduct.read_all(session=session)
             for product in products:
-                CRUDOffer.delete_all(product_id=product.id, session=session)
-                offers = requests.get(
+                response: Response = requests.get(
                     url=f"{settings.offer_url}/products/{product.id}/offers",
                     headers={"Bearer": settings.offer_token},
-                ).json()
-                for offer in offers:
-                    offer_db = Offer(
-                        id=offer["id"],
-                        price=offer["price"],
-                        items_in_stock=offer["items_in_stock"],
-                        product_id=product.id,
+                )
+                if response.status_code != 200:
+                    raise HTTPException(
+                        status_code=500, detail="Offer ms call error"
                     )
-                    CRUDOffer.create(offer=offer_db, session=session)
+                offers = response.json()
+                for offer in offers:
+                    offer_db = CRUDOffer.read_by_id(
+                        id=offer["id"], session=session
+                    )
+                    if not offer_db:
+                        offer_db = Offer(
+                            id=offer["id"],
+                            price=offer["price"],
+                            items_in_stock=offer["items_in_stock"],
+                            product_id=product.id,
+                        )
+                        CRUDOffer.create(offer=offer_db, session=session)
+                    offer_db.price = offer["price"]
+                    offer_db.items_in_stock = offer["items_in_stock"]
+                    CRUDOffer.update(offer=offer_db, session=session)
         time.sleep(60)
