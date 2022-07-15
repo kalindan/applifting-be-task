@@ -1,1 +1,1 @@
-from .auth import generate_token, jwt_bearer
+from .auth import JWTBearer, generate_token, jwt_bearer

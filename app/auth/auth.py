@@ -29,6 +29,7 @@ class JWTBearer(HTTPBearer):
     def validate_token(self, token: str):
         try:
             jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+            return True
         except JWTError:
             raise HTTPException(
                 status_code=401,
