@@ -19,6 +19,7 @@ def session_fixture():
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         yield session
+    SQLModel.metadata.drop_all(engine)
 
 
 @pytest.fixture(name="client")
@@ -44,11 +45,11 @@ def get_jwt_token_fixture(client: TestClient):
     ).json()["access_token"]
 
 
-def mock_create_product(jwt_token: str, client: TestClient):
+def mock_create_product(
+    jwt_token: str, client: TestClient, name: str = "Test product"
+):
     return client.post(
         url="/products",
         headers={"Authorization": f"Bearer {jwt_token}"},
-        json=ProductWrite(
-            name="Test product", description="Test description"
-        ).dict(),
+        json=ProductWrite(name=name, description="Test description").dict(),
     )
