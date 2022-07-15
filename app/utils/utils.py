@@ -55,7 +55,8 @@ def get_offers():
                             product_id=product.id,
                         )
                         CRUDOffer.create(offer=offer_db, session=session)
-                    offer_db.price = offer["price"]
-                    offer_db.items_in_stock = offer["items_in_stock"]
-                    CRUDOffer.update(offer=offer_db, session=session)
+                    else:
+                        offer_db.price = offer["price"]
+                        offer_db.items_in_stock = offer["items_in_stock"]
+                        CRUDOffer.update(offer=offer_db, session=session)
         time.sleep(60)
