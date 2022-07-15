@@ -1,22 +1,22 @@
 import secrets
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 
-from app.auth.auth import generate_token
-from app.config import config
-from app.models.login_model import LoginInfo
+from app.auth import generate_token
+from app.config import settings
+from app.models import LoginInfo
 
 router = APIRouter(prefix="/login", tags=["Admin"])
 
 
 @router.post("")
 def login_admin(login: LoginInfo):
-    correct_username = secrets.compare_digest(
-        login.username, config.admin_username
+    correct_username: bool = secrets.compare_digest(
+        login.username, settings.admin_username
     )
-    correct_password = secrets.compare_digest(
-        login.password, config.admin_password
+    correct_password: bool = secrets.compare_digest(
+        login.password, settings.admin_password
     )
     if not (correct_username and correct_password):
         raise HTTPException(

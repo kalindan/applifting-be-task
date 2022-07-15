@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from app.db import create_db_and_tables
 from app.routers import login, products
-from app.utils.utils import offer_caller
+from app.utils import offer_caller
 
 app = FastAPI(title="Product aggregator")
 

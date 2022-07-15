@@ -4,7 +4,7 @@ from fastapi import HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt  # type:ignore
 
-from app.config.config import config
+from app.config import settings
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 5
@@ -28,7 +28,7 @@ class JWTBearer(HTTPBearer):
 
     def validate_token(self, token: str):
         try:
-            jwt.decode(token, config.secret_key, algorithms=[ALGORITHM])
+            jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
         except JWTError:
             raise HTTPException(
                 status_code=401,
@@ -42,5 +42,7 @@ jwt_bearer = JWTBearer()
 def generate_token():
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode: dict = {"exp": expire}
-    encoded_jwt = jwt.encode(to_encode, config.secret_key, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.secret_key, algorithm=ALGORITHM
+    )
     return encoded_jwt

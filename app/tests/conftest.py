@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-from app.config.config import config
+from app.config.config import settings
 from app.db.database import get_session
 from app.main import app
 from app.models.product_model import ProductWrite
@@ -38,8 +38,8 @@ def get_jwt_token_fixture(client: TestClient):
         url="/login",
         headers={"Content-Type": "application/json"},
         json={
-            "username": config.admin_username,
-            "password": config.admin_password,
+            "username": settings.admin_username,
+            "password": settings.admin_password,
         },
     ).json()["access_token"]
 

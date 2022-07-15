@@ -3,12 +3,10 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
 from sqlmodel import Session
 
-from app.auth.auth import jwt_bearer
-from app.db.crud import CRUDOffer, CRUDProduct
-from app.db.database import get_session
-from app.models import Product, ProductRead, ProductWrite
-from app.models.read_models import ProductReadWithOffers
-from app.utils.utils import register_product
+from app.auth import jwt_bearer
+from app.db import CRUDOffer, CRUDProduct, get_session
+from app.models import Product, ProductRead, ProductReadWithOffers, ProductWrite
+from app.utils import register_product
 
 router = APIRouter(prefix="/products")
 

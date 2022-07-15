@@ -1,9 +1,7 @@
 from fastapi import HTTPException
-from sqlalchemy import desc
 from sqlmodel import Session, select
 
-from app.models import Product
-from app.models.offer_model import Offer
+from app.models import Offer, Product
 
 
 class CRUDProduct:

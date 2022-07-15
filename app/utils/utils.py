@@ -4,17 +4,15 @@ import requests  # type:ignore
 from fastapi import HTTPException
 from sqlmodel import Session
 
-from app.config.config import config
-from app.db.crud import CRUDOffer, CRUDProduct
-from app.db.database import engine
-from app.models.offer_model import Offer
-from app.models.product_model import Product
+from app.config import settings
+from app.db import CRUDOffer, CRUDProduct, engine
+from app.models import Offer, Product
 
 
-async def register_product(product: Product):
+async def register_product(product: Product) -> bool:
     response = requests.post(
-        url=f"{config.offer_url}/products/register",
-        headers={"Bearer": config.offer_token},
+        url=f"{settings.offer_url}/products/register",
+        headers={"Bearer": settings.offer_token},
         json={
             "id": product.id,
             "name": product.name,
@@ -25,7 +23,9 @@ async def register_product(product: Product):
         raise HTTPException(status_code=400, detail="Bad request")
     if response.status_code == 406:
         raise HTTPException(status_code=406, detail="Unauthorized")
-    return
+    if response.status_code == 201:
+        return True
+    raise HTTPException(status_code=500, detail="Offer ms call error")
 
 
 def offer_caller():
@@ -35,8 +35,8 @@ def offer_caller():
             for product in products:
                 CRUDOffer.delete_all(product_id=product.id, session=session)
                 offers = requests.get(
-                    url=f"{config.offer_url}/products/{product.id}/offers",
-                    headers={"Bearer": config.offer_token},
+                    url=f"{settings.offer_url}/products/{product.id}/offers",
+                    headers={"Bearer": settings.offer_token},
                 ).json()
                 for offer in offers:
                     offer_db = Offer(
