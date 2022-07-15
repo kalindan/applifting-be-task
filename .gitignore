@@ -30,3 +30,5 @@ app/.coverage
 .vscode/settings.json
 app/database.db
 database.db
+app/tests/tests_auth/__pycache__/__init__.cpython-310.pyc
+app/tests/tests_auth/__pycache__/test_auth.cpython-310-pytest-7.1.2.pyc

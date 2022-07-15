@@ -1,11 +1,13 @@
 import time
+from audioop import getsample
+from typing import Generator
 
 import requests  # type:ignore
 from fastapi import HTTPException
 from sqlmodel import Session
 
 from app.config import settings
-from app.db import CRUDOffer, CRUDProduct, engine
+from app.db import CRUDOffer, CRUDProduct, get_session
 from app.models import Offer, Product
 
 
@@ -28,27 +30,29 @@ async def register_product(product: Product) -> bool:
     raise HTTPException(status_code=500, detail="Offer ms call error")
 
 
-def get_offers():
+def get_offers(session: Session) -> bool:
+    products: list[Product] = CRUDProduct.read_all(session=session)
+    for product in products:
+        response = requests.get(
+            url=f"{settings.offer_url}/products/{product.id}/offers",
+            headers={"Bearer": settings.offer_token},
+        )
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Offer ms call error")
+        CRUDOffer.delete_all(product_id=product.id, session=session)
+        offers = response.json()
+        for offer in offers:
+            offer_db = Offer(
+                id=offer["id"],
+                price=offer["price"],
+                items_in_stock=offer["items_in_stock"],
+                product_id=product.id,
+            )
+            CRUDOffer.create(offer=offer_db, session=session)
+    return True
+
+
+def get_offers_loop():
     while True:
-        with Session(engine) as session:
-            products: list[Product] = CRUDProduct.read_all(session=session)
-            for product in products:
-                response = requests.get(
-                    url=f"{settings.offer_url}/products/{product.id}/offers",
-                    headers={"Bearer": settings.offer_token},
-                )
-                if response.status_code != 200:
-                    raise HTTPException(
-                        status_code=500, detail="Offer ms call error"
-                    )
-                CRUDOffer.delete_all(product_id=product.id, session=session)
-                offers = response.json()
-                for offer in offers:
-                    offer_db = Offer(
-                        id=offer["id"],
-                        price=offer["price"],
-                        items_in_stock=offer["items_in_stock"],
-                        product_id=product.id,
-                    )
-                    CRUDOffer.create(offer=offer_db, session=session)
+        get_offers(session=next(get_session()))
         time.sleep(60)
