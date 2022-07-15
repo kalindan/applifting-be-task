@@ -15,7 +15,10 @@ router = APIRouter(prefix="/products")
     "/{id}", response_model=ProductReadWithOffers, tags=["Product catalog"]
 )
 def get_product_with_offers(id: int, session: Session = Depends(get_session)):
-    return CRUDProduct.read_by_id(id=id, session=session)
+    product = CRUDProduct.read_by_id(id=id, session=session)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
 
 
 @router.get("", response_model=list[ProductRead], tags=["Product catalog"])
@@ -30,7 +33,7 @@ async def create_product(
     session: Session = Depends(get_session),
     jwt: None = Depends(jwt_bearer),
 ):
-    if CRUDProduct.is_in_db(name=product.name, session=session):
+    if CRUDProduct.read_by_name(name=product.name, session=session):
         raise HTTPException(status_code=406, detail="Product already exists")
     product_db = CRUDProduct.create(
         product=Product.from_orm(product), session=session
@@ -46,9 +49,11 @@ def update_product_description(
     session: Session = Depends(get_session),
     jwt: None = Depends(jwt_bearer),
 ):
-    return CRUDProduct.update_description_by_id(
-        id=id, description=description, session=session
-    )
+    product = CRUDProduct.read_by_id(id=id, session=session)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    product.description = description
+    return CRUDProduct.update(product=product, session=session)
 
 
 @router.delete("/{id}", tags=["Edit products"])
@@ -57,7 +62,10 @@ def delete_product(
     session: Session = Depends(get_session),
     jwt: None = Depends(jwt_bearer),
 ):
-    CRUDProduct.delete_by_id(id=id, session=session)
+    product = CRUDProduct.read_by_id(id=id, session=session)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    CRUDProduct.delete(product=product, session=session)
     CRUDOffer.delete_all(product_id=id, session=session)
     return JSONResponse(
         status_code=200,
