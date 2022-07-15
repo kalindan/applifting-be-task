@@ -1,1 +1,1 @@
-from .utils import get_offers, register_product
+from .utils import offer_caller, register_product

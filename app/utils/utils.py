@@ -2,7 +2,6 @@ import time
 
 import requests  # type:ignore
 from fastapi import HTTPException
-from requests import Response
 from sqlmodel import Session
 
 from app.config import settings
@@ -34,7 +33,7 @@ def get_offers():
         with Session(engine) as session:
             products: list[Product] = CRUDProduct.read_all(session=session)
             for product in products:
-                response: Response = requests.get(
+                response = requests.get(
                     url=f"{settings.offer_url}/products/{product.id}/offers",
                     headers={"Bearer": settings.offer_token},
                 )
@@ -42,21 +41,14 @@ def get_offers():
                     raise HTTPException(
                         status_code=500, detail="Offer ms call error"
                     )
+                CRUDOffer.delete_all(product_id=product.id, session=session)
                 offers = response.json()
                 for offer in offers:
-                    offer_db = CRUDOffer.read_by_id(
-                        id=offer["id"], session=session
+                    offer_db = Offer(
+                        id=offer["id"],
+                        price=offer["price"],
+                        items_in_stock=offer["items_in_stock"],
+                        product_id=product.id,
                     )
-                    if not offer_db:
-                        offer_db = Offer(
-                            id=offer["id"],
-                            price=offer["price"],
-                            items_in_stock=offer["items_in_stock"],
-                            product_id=product.id,
-                        )
-                        CRUDOffer.create(offer=offer_db, session=session)
-                    else:
-                        offer_db.price = offer["price"]
-                        offer_db.items_in_stock = offer["items_in_stock"]
-                        CRUDOffer.update(offer=offer_db, session=session)
+                    CRUDOffer.create(offer=offer_db, session=session)
         time.sleep(60)
