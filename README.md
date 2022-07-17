@@ -1,8 +1,11 @@
-## Manual
+### How to run locally
+1. Pull the repository
+2. Run following command to build and run containers of app and postgres db
 ```javascript
-docker-compose up --build
+docker-compose --build
 ```
-## Product aggregator API
+3. 
+### Product aggregator API
 | Endpoints        | HTTP method | Description                |
 |------------------|-------------|----------------------------|
 | /login           |POST         | Login admin                |
@@ -12,7 +15,7 @@ docker-compose up --build
 | /products/{id}   |PATCH        | Update product description |
 | /products/{id}   |DELETE       | Delete selected product    |
 
-## Requirements 
+### Requirements 
 - [X] Provide an API to create, update and delete a product 
 - [X] Periodically query the provided microservice for oﬀers/shops with products 
 - [X] Provide an API to get product oﬀers
