@@ -1,7 +1,11 @@
 ## Product aggregator microservice BE
 
 This app was created based on requirements from company Applifting. Main goal was to create a REST API JSON Python microservice which allows users to browse a product catalog and which automatically updates prices from the oﬀer service (provided by Applifting). 
-
+### Stack
+- Python 3.10
+- FastAPI
+- SQLModel
+- PostgreSQL
 ### Deployment
 Application was deployed in form of Docker image to Heroku. App is accessible on this link
 ```javascript
@@ -31,6 +35,9 @@ localhost:8080/docs
 | /products/{id}   |DELETE       | Delete selected product    |
 
 ### User workflow
+- Application divides between two user roles:
+  - Admin: After successfull login, JWT token is generated. Token can be used to gain authorization for creation/update/deletion of products in database.
+  - General customer: Can get list of products and specific product with its offers.
 ### Requirements 
 - [X] Provide an API to create, update and delete a product 
 - [X] Periodically query the provided microservice for oﬀers/shops with products 
