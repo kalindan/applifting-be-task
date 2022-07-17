@@ -5,7 +5,8 @@
 docker-compose up --build
 ```
 3. Go to your browser and look for "http://localhost:8080/docs"
-./images/main_screen.png
+![This is an image](./images/main_screen.png)
+
 ### Product aggregator API
 | Endpoints        | HTTP method | Description                |
 |------------------|-------------|----------------------------|
