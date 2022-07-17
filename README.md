@@ -1,3 +1,12 @@
+## Product aggregator microservice BE
+
+This app was created based on requirements from company Applifting. Main goal was to create a REST API JSON Python microservice which allows users to browse a product catalog and which automatically updates prices from the oﬀer service (provided by Applifting). 
+
+### Deployment
+Application was deployed in form of Docker image to Heroku. App is accessible on this link
+```javascript
+https://applifting-product-aggregator.herokuapp.com/docs
+```
 ### How to run locally
 1. Pull the repository
 2. Run following command to build and run containers of app and postgres db
@@ -8,7 +17,8 @@ docker-compose up --build
 ```javascript
 localhost:8080/docs
 ```
-![This is an image](/docs/main_screen.png?raw=true)
+4. You should see SwaggerUI with all application endpoints ready to be tested
+![Main screen](/docs/main_screen.png?raw=true)
 
 ### Product aggregator API
 | Endpoints        | HTTP method | Description                |
@@ -20,6 +30,7 @@ localhost:8080/docs
 | /products/{id}   |PATCH        | Update product description |
 | /products/{id}   |DELETE       | Delete selected product    |
 
+### User workflow
 ### Requirements 
 - [X] Provide an API to create, update and delete a product 
 - [X] Periodically query the provided microservice for oﬀers/shops with products 
