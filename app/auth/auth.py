@@ -20,10 +20,9 @@ class JWTBearer(HTTPBearer):
         if credentials:
             self.validate_token(token=credentials.credentials)
             return
-        else:
-            raise HTTPException(
-                status_code=403, detail="Invalid authorization code."
-            )
+        raise HTTPException(
+            status_code=403, detail="Invalid authorization code."
+        )
 
     def validate_token(self, token: str):
         try:
