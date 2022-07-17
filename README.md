@@ -8,7 +8,7 @@ docker-compose up --build
 ```javascript
 localhost:8080/docs
 ```
-![This is an image](images/main_screen.png)
+![This is an image](/docs/main_screen.png?raw=true)
 
 ### Product aggregator API
 | Endpoints        | HTTP method | Description                |
