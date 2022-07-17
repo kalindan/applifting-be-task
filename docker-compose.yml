@@ -23,7 +23,7 @@ services:
     ports:
       - 8080:80
     volumes:
-      - .:/app/code
+      - .:/code
     depends_on:
       - db
 volumes:

@@ -1,4 +1,4 @@
-app/tests
-app/.coverage
-app/__pycache__
-app/.pytest_cache
+tests
+.coverage
+__pycache__
+.pytest_cache
