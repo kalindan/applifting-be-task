@@ -2,7 +2,10 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from app.config import settings
 
-engine = create_engine(settings.db_url)
+uri = settings.db_url
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+engine = create_engine(uri)
 
 
 def create_db_and_tables():
