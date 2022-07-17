@@ -7,7 +7,8 @@ from fastapi import HTTPException
 from sqlmodel import Session
 
 from app.config import settings
-from app.db import CRUDOffer, CRUDProduct, get_session
+from app.crud import offer_crud, product_crud
+from app.db import get_session
 from app.models import Offer, Product
 
 
@@ -31,7 +32,7 @@ async def register_product(product: Product) -> bool:
 
 
 def get_offers(session: Session) -> bool:
-    products: list[Product] = CRUDProduct.read_all(session=session)
+    products: list[Product] = product_crud.read_all(session=session)
     for product in products:
         response = requests.get(
             url=f"{settings.offer_url}/products/{product.id}/offers",
@@ -39,7 +40,7 @@ def get_offers(session: Session) -> bool:
         )
         if response.status_code != 200:
             raise HTTPException(status_code=500, detail="Offer ms call error")
-        CRUDOffer.delete_all(product_id=product.id, session=session)
+        offer_crud.delete_all(product_id=product.id, session=session)
         offers = response.json()
         for offer in offers:
             offer_db = Offer(
@@ -48,7 +49,7 @@ def get_offers(session: Session) -> bool:
                 items_in_stock=offer["items_in_stock"],
                 product_id=product.id,
             )
-            CRUDOffer.create(offer=offer_db, session=session)
+            offer_crud.create(offer=offer_db, session=session)
     return True
 
 
