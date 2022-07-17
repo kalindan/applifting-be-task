@@ -12,13 +12,8 @@ services:
   app:
     build: .
     container_name: applifting-app
-    environment:
-      OFFER_TOKEN: c1287585-083c-4250-99dd-72d9f413106d
-      OFFER_URL: https://applifting-python-excercise-ms.herokuapp.com/api/v1
-      DB_URL: postgresql://postgres:postgrespw@db:5432/products_db
-      SECRET_KEY: kajsdfk13dkmn229x3jj3fv0j2
-      ADMIN_USERNAME: admin123
-      ADMIN_PASSWORD: admin123
+    env_file:
+      - .env
     command: uvicorn app.main:app --host 0.0.0.0 --port 80 --reload
     ports:
       - 8080:80
