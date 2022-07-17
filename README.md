@@ -4,8 +4,11 @@
 ```javascript
 docker-compose up --build
 ```
-3. Go to your browser and look for "http://localhost:8080/docs"
-![This is an image](./images/main_screen.png)
+3. Go to your browser and type following
+```javascript
+localhost:8080/docs
+```
+![This is an image](images/main_screen.png)
 
 ### Product aggregator API
 | Endpoints        | HTTP method | Description                |
