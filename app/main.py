@@ -24,3 +24,8 @@ p.start()
 @app.on_event("shutdown")
 async def on_shutdown():
     p.terminate()
+
+
+@app.get("/", tags=["Index"])
+def index():
+    return "Hello there"
