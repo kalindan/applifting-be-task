@@ -57,8 +57,4 @@ def get_offers(session: Session) -> bool:
 def get_offers_loop():
     while True:
         get_offers(session=next(get_session()))
-        time.sleep(60)
-
-
-def register_product_and_get_offers():
-    pass
+        time.sleep(settings.offer_refresh_rate_sec)

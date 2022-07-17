@@ -7,7 +7,6 @@ from jose import JWTError, jwt  # type:ignore
 from app.config import settings
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 5
 
 
 class JWTBearer(HTTPBearer):
@@ -41,7 +40,9 @@ jwt_bearer = JWTBearer()
 
 
 def generate_token():
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.utcnow() + timedelta(
+        minutes=settings.jwt_expiration_time_min
+    )
     to_encode: dict = {"exp": expire}
     encoded_jwt = jwt.encode(
         to_encode, settings.secret_key, algorithm=ALGORITHM
