@@ -12,13 +12,13 @@ app.include_router(login.router)
 app.include_router(products.router)
 
 
+p = Process(target=get_offers_loop)
+
+
 @app.on_event("startup")
 async def on_startup():
     create_db_and_tables()
-
-
-p = Process(target=get_offers_loop)
-p.start()
+    p.start()
 
 
 @app.on_event("shutdown")
