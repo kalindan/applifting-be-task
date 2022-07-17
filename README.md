@@ -2,9 +2,10 @@
 1. Pull the repository
 2. Run following command to build and run containers of app and postgres db
 ```javascript
-docker-compose --build
+docker-compose up --build
 ```
-3. 
+3. Go to your browser and look for "http://localhost:8080/docs"
+./images/main_screen.png
 ### Product aggregator API
 | Endpoints        | HTTP method | Description                |
 |------------------|-------------|----------------------------|

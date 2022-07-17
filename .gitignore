@@ -35,3 +35,4 @@ app/tests/tests_auth/__pycache__/test_auth.cpython-310-pytest-7.1.2.pyc
 app/crud/__pycache__/__init__.cpython-310.pyc
 app/crud/__pycache__/offer_crud.cpython-310.pyc
 app/crud/__pycache__/product_crud.cpython-310.pyc
+images/main_screen.png
