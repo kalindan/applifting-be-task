@@ -7,7 +7,7 @@ from app.auth import jwt_bearer
 from app.crud import offer_crud, product_crud
 from app.db import get_session
 from app.models import Product, ProductRead, ProductReadWithOffers, ProductWrite
-from app.utils import register_product
+from app.utils import get_offers, register_product
 
 router = APIRouter(prefix="/products")
 
@@ -40,6 +40,7 @@ async def create_product(
         product=Product.from_orm(product), session=session
     )
     background_tasks.add_task(register_product, product_db)
+    background_tasks.add_task(get_offers, session)
     return product_db
 
 
