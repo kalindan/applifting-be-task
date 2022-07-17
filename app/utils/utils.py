@@ -1,6 +1,5 @@
 import time
-from audioop import getsample
-from typing import Generator
+from datetime import datetime
 
 import requests  # type:ignore
 from fastapi import HTTPException
@@ -12,7 +11,7 @@ from app.db import get_session
 from app.models import Offer, Product
 
 
-async def register_product(product: Product) -> bool:
+def register_product(product: Product) -> bool:
     response = requests.post(
         url=f"{settings.offer_url}/products/register",
         headers={"Bearer": settings.offer_token},
@@ -33,6 +32,7 @@ async def register_product(product: Product) -> bool:
 
 def get_offers(session: Session) -> bool:
     products: list[Product] = product_crud.read_all(session=session)
+    date_time = datetime.now()
     for product in products:
         response = requests.get(
             url=f"{settings.offer_url}/products/{product.id}/offers",
@@ -49,6 +49,7 @@ def get_offers(session: Session) -> bool:
                 items_in_stock=offer["items_in_stock"],
                 product_id=product.id,
             )
+            offer_db.date = date_time
             offer_crud.create(offer=offer_db, session=session)
     return True
 
@@ -57,3 +58,7 @@ def get_offers_loop():
     while True:
         get_offers(session=next(get_session()))
         time.sleep(60)
+
+
+def register_product_and_get_offers():
+    pass

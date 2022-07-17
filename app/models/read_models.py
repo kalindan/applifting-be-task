@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from .offer_model import OfferBase
 from .product_model import ProductBase
 
