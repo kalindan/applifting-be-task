@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
@@ -7,10 +6,9 @@ from app.tests.conftest import mock_create_product
 from app.utils import get_offers, register_product
 
 
-@pytest.mark.anyio
-async def test_register_product():
+def test_register_product():
     product = Product(name="Test product", description="Test description")
-    result = await register_product(product)
+    result = register_product(product)
     assert result == True
 
 
