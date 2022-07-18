@@ -31,14 +31,17 @@ def get_offers(session: Session) -> bool:
     date_time = datetime.now()
     for product in products:
         offers = get_offers_by_product_id(product_id=product.id)
-        offers_db = [
-            Offer(product_id=product.id, date=date_time, **offer)
-            for offer in offers
-        ]
         offer_crud.delete_all_by_product_id(
             product_id=product.id, session=session
         )
-        offer_crud.create_all(offers=offers_db, session=session)
+        offers_db = [
+            offer_crud.create(
+                offer=Offer(product_id=product.id, date=date_time, **_offer),
+                session=session,
+            )
+            for _offer in offers
+        ]
+
     return True
 
 
