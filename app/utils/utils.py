@@ -15,11 +15,7 @@ def register_product(product: Product) -> bool:
     response = requests.post(
         url=f"{settings.offer_url}/products/register",
         headers={"Bearer": settings.offer_token},
-        json={
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-        },
+        json=product.json(),
     )
     if response.status_code == 400:
         raise HTTPException(status_code=400, detail="Bad request")
@@ -34,24 +30,26 @@ def get_offers(session: Session) -> bool:
     products: list[Product] = product_crud.read_all(session=session)
     date_time = datetime.now()
     for product in products:
-        response = requests.get(
-            url=f"{settings.offer_url}/products/{product.id}/offers",
-            headers={"Bearer": settings.offer_token},
+        offers = get_offers_by_product_id(product_id=product.id)
+        offers_db = [
+            Offer(product_id=product.id, date=date_time, **offer)
+            for offer in offers
+        ]
+        offer_crud.delete_all_by_product_id(
+            product_id=product.id, session=session
         )
-        if response.status_code != 200:
-            raise HTTPException(status_code=500, detail="Offer ms call error")
-        offer_crud.delete_all(product_id=product.id, session=session)
-        offers = response.json()
-        for offer in offers:
-            offer_db = Offer(
-                id=offer["id"],
-                price=offer["price"],
-                items_in_stock=offer["items_in_stock"],
-                product_id=product.id,
-            )
-            offer_db.date = date_time
-            offer_crud.create(offer=offer_db, session=session)
+        offer_crud.create_all(offers=offers_db, session=session)
     return True
+
+
+def get_offers_by_product_id(product_id: int | None):
+    response = requests.get(
+        url=f"{settings.offer_url}/products/{product_id}/offers",
+        headers={"Bearer": settings.offer_token},
+    )
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Offer ms call error")
+    return response.json()
 
 
 def get_offers_loop():
