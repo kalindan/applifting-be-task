@@ -68,7 +68,7 @@ def delete_product(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     product_crud.delete(product=product, session=session)
-    offer_crud.delete_all(product_id=id, session=session)
+    offer_crud.delete_all_by_product_id(product_id=id, session=session)
     return JSONResponse(
         status_code=200,
         content={
