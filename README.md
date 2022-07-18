@@ -35,9 +35,13 @@ localhost:8080/docs
 | /products/{id}   |DELETE       | Delete selected product    |
 
 ### User workflow
-- Application divides between two user roles:
-  - Admin: After successfull login, JWT token is generated. Token can be used to gain authorization for creation/update/deletion of products in database.
-  - General customer: Can get list of products and specific product with its offers.
+Application divides between two user roles:
+- Admin: After successful login, JWT token is generated. Token can be used to gain authorization for creation/update/deletion of products in database.
+  - default username: admin
+  - default password: admin
+  - default token expiration time: 5 mins
+![JWT Token](/docs/jwt_token.png?raw=true)
+- General customer: Can get list of products and specific product with its actual offers.
 ### Requirements 
 - [X] Provide an API to create, update and delete a product 
 - [X] Periodically query the provided microservice for oﬀers/shops with products 
