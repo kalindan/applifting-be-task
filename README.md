@@ -36,7 +36,7 @@ localhost:8080/docs
 
 ### User workflow
 Application divides between two user roles:
-- Admin: After successful login, JWT token is generated. Token can be used to gain authorization for creation/update/deletion of products in database.
+- Admin: After successful authentication, JWT token is generated. Token can be used to gain authorization for creation/update/deletion of products in database.
   - default username: admin
   - default password: admin
   - default token expiration time: 5 mins
