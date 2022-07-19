@@ -7,8 +7,7 @@ from app.auth import jwt_bearer
 from app.crud import offer_crud, product_crud
 from app.db import get_session
 from app.models import Product, ProductRead, ProductReadWithOffers, ProductWrite
-from app.utils import get_offers, register_product
-from app.utils.utils import get_offers_by_product_id
+from app.utils import get_offers_by_product_id, register_product
 
 router = APIRouter(prefix="/products")
 
@@ -29,12 +28,7 @@ async def get_product_with_offers(
 async def get_products(session: AsyncSession = Depends(get_session)):
     products = await product_crud.read_all(session=session)
     if not products:
-        return JSONResponse(
-            status_code=200,
-            content={
-                "message": "No products in catalog",
-            },
-        )
+        raise HTTPException(status_code=404, detail="No products found")
     return products
 
 
@@ -45,10 +39,10 @@ async def create_product(
     session: AsyncSession = Depends(get_session),
     jwt: None = Depends(jwt_bearer),
 ):
-    is_registered = await product_crud.read_by_name(
+    is_in_catalog = await product_crud.read_by_name(
         name=product.name, session=session
     )
-    if is_registered:
+    if is_in_catalog:
         raise HTTPException(status_code=406, detail="Product already exists")
     product_db = await product_crud.create(
         product=Product.from_orm(product), session=session

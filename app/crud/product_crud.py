@@ -3,7 +3,6 @@ from sqlalchemy.orm import selectinload
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.models import Product
-from app.models.offer_model import Offer
 
 
 async def create(product: Product, session: AsyncSession) -> Product:
