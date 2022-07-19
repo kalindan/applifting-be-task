@@ -35,3 +35,4 @@ app/crud/__pycache__/__init__.cpython-310.pyc
 app/crud/__pycache__/offer_crud.cpython-310.pyc
 app/crud/__pycache__/product_crud.cpython-310.pyc
 images/main_screen.png
+app/tests/__pycache__/conftest.cpython-310-pytest-6.2.5.pyc

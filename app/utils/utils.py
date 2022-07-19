@@ -1,22 +1,24 @@
-import time
+import asyncio
 from datetime import datetime
+from functools import wraps
+from typing import Any, Callable, Coroutine
 
-import requests  # type:ignore
 from fastapi import HTTPException
-from sqlmodel import Session
+from httpx import AsyncClient
 
 from app.config import settings
 from app.crud import offer_crud, product_crud
-from app.db import get_session
+from app.db import async_session
 from app.models import Offer, Product
 
 
-def register_product(product: Product) -> bool:
-    response = requests.post(
-        url=f"{settings.offer_url}/products/register",
-        headers={"Bearer": settings.offer_token},
-        json=product.json(),
-    )
+async def register_product(product: Product) -> bool:
+    async with AsyncClient() as client:
+        response = await client.post(
+            url=f"{settings.offer_url}/products/register",
+            headers={"Bearer": settings.offer_token},
+            json=product.json(),
+        )
     if response.status_code == 400:
         raise HTTPException(status_code=400, detail="Bad request")
     if response.status_code == 406:
@@ -26,36 +28,71 @@ def register_product(product: Product) -> bool:
     raise HTTPException(status_code=500, detail="Offer ms call error")
 
 
-def get_offers(session: Session) -> bool:
-    products: list[Product] = product_crud.read_all(session=session)
-    date_time = datetime.now()
-    for product in products:
-        offers = get_offers_by_product_id(product_id=product.id)
-        offer_crud.delete_all_by_product_id(
-            product_id=product.id, session=session
+async def get_offers() -> bool:
+    async with async_session() as session:
+        products: list[Product] | None = await product_crud.read_all(
+            session=session
         )
-        offers_db = [
-            offer_crud.create(
-                offer=Offer(product_id=product.id, date=date_time, **_offer),
-                session=session,
-            )
-            for _offer in offers
+    if not products:
+        return False
+    product_offers = await asyncio.gather(
+        *[
+            get_offers_by_product_id(product_id=product.id)
+            for product in products
         ]
+    )
 
     return True
 
 
-def get_offers_by_product_id(product_id: int | None):
-    response = requests.get(
-        url=f"{settings.offer_url}/products/{product_id}/offers",
-        headers={"Bearer": settings.offer_token},
-    )
-    if response.status_code != 200:
-        raise HTTPException(status_code=500, detail="Offer ms call error")
-    return response.json()
+async def get_offers_by_product_id(product_id: int | None) -> bool:
+    async with AsyncClient() as client:
+        response = await client.get(
+            url=f"{settings.offer_url}/products/{product_id}/offers",
+            headers={"Bearer": settings.offer_token},
+        )
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Offer ms call error")
+    async with async_session() as session:
+        await offer_crud.delete_all_by_product_id(
+            product_id=product_id, session=session
+        )
+        offers = response.json()
+        date_time = datetime.now()
+        await offer_crud.create_all(
+            offers=[
+                Offer(product_id=product_id, date=date_time, **offer)
+                for offer in offers
+            ],
+            session=session,
+        )
+    return True
 
 
-def get_offers_loop():
-    while True:
-        get_offers(session=next(get_session()))
-        time.sleep(settings.offer_refresh_rate_sec)
+def repeat_every(
+    *,
+    seconds: int,
+) -> Callable[
+    [Callable[[], Coroutine[Any, Any, None]]],
+    Callable[[], Coroutine[Any, Any, None]],
+]:
+    def decorator(
+        func: Callable[[], Coroutine[Any, Any, None]]
+    ) -> Callable[[], Coroutine[Any, Any, None]]:
+        @wraps(func)
+        async def wrapped() -> None:
+            async def loop() -> None:
+                while True:
+                    await func()
+                    await asyncio.sleep(seconds)
+
+            asyncio.ensure_future(loop())
+
+        return wrapped
+
+    return decorator
+
+
+@repeat_every(seconds=settings.offer_refresh_rate_sec)
+async def get_offers_task():
+    await get_offers()

@@ -6,10 +6,10 @@ from pydantic import BaseSettings, Field
 class Settings(BaseSettings):
     admin_username: str = os.environ.get("ADMIN_USERNAME", "admin")
     admin_password: str = os.environ.get("ADMIN_PASSWORD", "admin")
-    offer_token: str | None = os.environ.get(
+    offer_token: str = os.environ.get(
         "OFFER_TOKEN", "c1287585-083c-4250-99dd-72d9f413106d"
     )
-    offer_url: str | None = os.environ.get(
+    offer_url: str = os.environ.get(
         "OFFER_URL",
         "https://applifting-python-excercise-ms.herokuapp.com/api/v1",
     )
