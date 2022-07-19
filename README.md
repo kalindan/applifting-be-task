@@ -1,6 +1,8 @@
-## Product aggregator microservice BE
+## Product aggregator microservice BE Async version
 
 This app was created based on requirements from company Applifting. Main goal was to create a REST API JSON Python microservice which allows users to browse a product catalog and which automatically updates prices from the oﬀer service (provided by Applifting). 
+
+This is second iteration of app with async functionality enabled. Currently working on test suite
 ### Stack
 - Python 3.10
 - FastAPI
@@ -56,7 +58,7 @@ Application divides between two user roles:
 - [X] Create a background (job) service which periodically calls the Oﬀers 
 - [X] Create a read-only API for product oﬀers
 - [X] Base URL for the Oﬀers MS should be conﬁgurable via an environment variable
-- [X] Write basic tests with pytest 
+- [ ] Write basic tests with pytest 
 - [X] Push your code into a public repo on GitHub
 - [X] Add a README with information on how to start and use your service 
 - [X] JSON REST API simple authentication (eq.: access-token) 
