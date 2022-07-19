@@ -9,9 +9,10 @@ uvicorn = "*"
 sqlalchemy = "==1.4.35"
 sqlmodel = "*"
 requests = "*"
-psycopg2 = "*"
 python-jose = "*"
 python-multipart = "*"
+httpx = "*"
+asyncpg = "*"
 
 [dev-packages]
 mypy = "*"
