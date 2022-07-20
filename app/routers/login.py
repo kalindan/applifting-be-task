@@ -1,6 +1,6 @@
 import secrets
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from app.auth import generate_token
@@ -20,12 +20,12 @@ def login_admin(login: LoginInfo):
     )
     if not (correct_username and correct_password):
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
     jwt = generate_token()
     return JSONResponse(
-        status_code=200,
+        status_code=status.HTTP_200_OK,
         content={
             "message": f"Admin logged in",
             "access_token": jwt,

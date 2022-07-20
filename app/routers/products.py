@@ -1,4 +1,4 @@
-from fastapi import BackgroundTasks, Body, Depends, HTTPException
+from fastapi import BackgroundTasks, Body, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -20,7 +20,9 @@ async def get_product_with_offers(
 ):
     product = await product_crud.read_by_id(id=id, session=session)
     if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
+        )
     return product
 
 
@@ -28,11 +30,18 @@ async def get_product_with_offers(
 async def get_products(session: AsyncSession = Depends(get_session)):
     products = await product_crud.read_all(session=session)
     if not products:
-        raise HTTPException(status_code=404, detail="No products found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="No products found"
+        )
     return products
 
 
-@router.post("", response_model=ProductRead, tags=["Edit products"])
+@router.post(
+    "",
+    response_model=ProductRead,
+    tags=["Edit products"],
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_product(
     product: ProductWrite,
     background_tasks: BackgroundTasks,
@@ -43,7 +52,10 @@ async def create_product(
         name=product.name, session=session
     )
     if is_in_catalog:
-        raise HTTPException(status_code=406, detail="Product already exists")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Product already exists",
+        )
     product_db = await product_crud.create(
         product=Product.from_orm(product), session=session
     )
@@ -61,7 +73,9 @@ async def update_product_description(
 ):
     product = await product_crud.read_by_id(id=id, session=session)
     if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
+        )
     product.description = description
     product_in_db = await product_crud.update(product=product, session=session)
     return product_in_db
@@ -75,7 +89,9 @@ async def delete_product(
 ):
     product = await product_crud.read_by_id(id=id, session=session)
     if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
+        )
     await product_crud.delete(product=product, session=session)
     await offer_crud.delete_all_by_product_id(product_id=id, session=session)
     return JSONResponse(
