@@ -12,7 +12,7 @@ Application was deployed in form of Docker image to Heroku. App is accessible on
 https://applifting-product-aggregator.herokuapp.com/docs
 ```
 ### How to run locally
-1. Pull the repository
+1. Clone the repository
 2. Run following command to build and run containers of app and postgres db
 ```javascript
 docker-compose up --build
