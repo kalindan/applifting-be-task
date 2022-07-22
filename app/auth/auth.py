@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt  # type:ignore
 
@@ -21,7 +21,8 @@ class JWTBearer(HTTPBearer):
             self.validate_token(token=credentials.credentials)
             return
         raise HTTPException(
-            status_code=403, detail="Invalid authorization code."
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid authorization code.",
         )
 
     def validate_token(self, token: str):
@@ -30,7 +31,7 @@ class JWTBearer(HTTPBearer):
             return True
         except JWTError:
             raise HTTPException(
-                status_code=401,
+                status_code=status.HTTP_403_FORBIDDEN,
                 detail="Invalid token",
             )
 
