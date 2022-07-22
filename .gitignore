@@ -36,3 +36,5 @@ app/crud/__pycache__/offer_crud.cpython-310.pyc
 app/crud/__pycache__/product_crud.cpython-310.pyc
 images/main_screen.png
 app/tests/__pycache__/conftest.cpython-310-pytest-6.2.5.pyc
+alembic/__pycache__/env.cpython-310.pyc
+alembic/versions/__pycache__/8f9f9a098c1c_init.cpython-310.pyc
