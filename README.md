@@ -8,7 +8,7 @@ This is second iteration of app with async functionality enabled. Currently work
 - FastAPI
 - SQLModel
 - PostgreSQL
-```
+
 ### How to run locally
 1. Clone the "async" branch from repository
 ```javascript
