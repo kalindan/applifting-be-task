@@ -1,4 +1,4 @@
-## Product aggregator microservice BE Async version
+## Product aggregator microservice BE Async version (IN PROGRESS)
 
 This app was created based on requirements from company Applifting. Main goal was to create a REST API JSON Python microservice which allows users to browse a product catalog and which automatically updates prices from the oﬀer service (provided by Applifting). 
 
@@ -68,4 +68,4 @@ Application divides between two user roles:
 - [X] Consider adding some reasonable error handling to the API layer
 - [X] Provide a working Dockerﬁle and docker-compose.yml for your application for easy testing 
 - [X] Use reasonable dependency management
-- [X] Deploy your application to Heroku
+- [ ] Deploy your application to Heroku
