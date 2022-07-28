@@ -8,13 +8,9 @@ This is second iteration of app with async functionality enabled. Currently work
 - FastAPI
 - SQLModel
 - PostgreSQL
-### Deployment
-Application was deployed in form of Docker image to Heroku. App is accessible on this link
-```javascript
-https://applifting-product-aggregator.herokuapp.com/docs
 ```
 ### How to run locally
-1. Pull the "async" branch from repository
+1. Clone the "async" branch from repository
 ```javascript
 https://github.com/kalindan/applifting-be-task.git
 ```
