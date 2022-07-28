@@ -1,4 +1,4 @@
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from sqlmodel import Session
 
 from app.models import Product
@@ -12,6 +12,6 @@ def test_register_product():
     assert result == True
 
 
-def test_get_offers(jwt_token: str, client: TestClient, session: Session):
-    mock_create_product(jwt_token=jwt_token, client=client)
-    assert get_offers(session=session) == True
+# def test_get_offers(jwt_token: str, client: AsyncClient, session: Session):
+#     mock_create_product(jwt_token=jwt_token, client=client)
+#     assert get_offers(session=session) == True

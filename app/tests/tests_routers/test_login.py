@@ -1,10 +1,13 @@
+import pytest
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
 
 from app.config import settings
 
 
-def test_login(client: TestClient):
-    response = client.post(
+@pytest.mark.anyio
+async def test_login(client: AsyncClient):
+    response = await client.post(
         url="/login",
         headers={"Content-Type": "application/json"},
         json={
@@ -18,8 +21,9 @@ def test_login(client: TestClient):
     assert data["message"] == "Admin logged in"
 
 
-def test_login_invalid_credentials(client: TestClient):
-    response = client.post(
+@pytest.mark.anyio
+async def test_login_invalid_credentials(client: AsyncClient):
+    response = await client.post(
         url="/login",
         headers={"Content-Type": "application/json"},
         json={
