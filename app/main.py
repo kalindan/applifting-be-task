@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.db import create_db_and_tables
+from app.config import settings
 from app.routers import login, products
 from app.utils import get_offers_task
 
@@ -12,8 +12,7 @@ app.include_router(products.router)
 
 @app.on_event("startup")
 async def on_startup():
-    await create_db_and_tables()
-    await get_offers_task()
+    await get_offers_task(seconds=settings.offer_refresh_rate_sec)
 
 
 @app.get("/", tags=["Index"])
