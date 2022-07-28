@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=postgrespw
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=products_db
+    ports:
+      - 5432:5432
+    volumes:
+      - .:/var/lib/postgresql
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: applifting-app
+    env_file:
+      - .env
+    command: bash -c "alembic upgrade head && python -m pytest -v"
+    ports:
+      - 8080:80
+    volumes:
+      - .:/code
+    depends_on:
+      - db
