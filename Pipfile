@@ -13,6 +13,7 @@ python-jose = "*"
 python-multipart = "*"
 httpx = "*"
 asyncpg = "*"
+alembic = "*"
 
 [dev-packages]
 mypy = "*"
@@ -21,6 +22,8 @@ pytest = "*"
 isort = "*"
 pytest-cov = "*"
 anyio = "*"
+pytest-asyncio = "*"
+asgi-lifespan = "*"
 
 [requires]
 python_version = "3.10"
