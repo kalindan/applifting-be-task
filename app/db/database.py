@@ -19,8 +19,3 @@ async_session = sessionmaker(
 async def get_session() -> AsyncGenerator:
     async with async_session() as session:
         yield session
-
-
-async def create_db_and_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.create_all)
