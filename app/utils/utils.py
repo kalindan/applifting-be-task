@@ -1,9 +1,7 @@
 import asyncio
 from datetime import datetime
-from functools import wraps
-from typing import Any, Callable, Coroutine
 
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from httpx import AsyncClient
 
 from app.config import settings
@@ -19,13 +17,20 @@ async def register_product(product: Product) -> bool:
             headers={"Bearer": settings.offer_token},
             json=product.json(),
         )
-    if response.status_code == 400:
-        raise HTTPException(status_code=400, detail="Bad request")
-    if response.status_code == 406:
-        raise HTTPException(status_code=406, detail="Unauthorized")
-    if response.status_code == 201:
+    if response.status_code == status.HTTP_400_BAD_REQUEST:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Bad request"
+        )
+    if response.status_code == status.HTTP_406_NOT_ACCEPTABLE:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Unauthorized"
+        )
+    if response.status_code == status.HTTP_201_CREATED:
         return True
-    raise HTTPException(status_code=500, detail="Offer ms call error")
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail="Offer ms call error",
+    )
 
 
 async def get_offers() -> bool:
@@ -51,8 +56,11 @@ async def get_offers_by_product_id(product_id: int | None) -> bool:
             url=f"{settings.offer_url}/products/{product_id}/offers",
             headers={"Bearer": settings.offer_token},
         )
-        if response.status_code != 200:
-            raise HTTPException(status_code=500, detail="Offer ms call error")
+        if response.status_code != status.HTTP_200_OK:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Offer ms call error",
+            )
     async with async_session() as session:
         await offer_crud.delete_all_by_product_id(
             product_id=product_id, session=session
@@ -69,30 +77,10 @@ async def get_offers_by_product_id(product_id: int | None) -> bool:
     return True
 
 
-def repeat_every(
-    *,
-    seconds: int,
-) -> Callable[
-    [Callable[[], Coroutine[Any, Any, None]]],
-    Callable[[], Coroutine[Any, Any, None]],
-]:
-    def decorator(
-        func: Callable[[], Coroutine[Any, Any, None]]
-    ) -> Callable[[], Coroutine[Any, Any, None]]:
-        @wraps(func)
-        async def wrapped() -> None:
-            async def loop() -> None:
-                while True:
-                    await func()
-                    await asyncio.sleep(seconds)
+async def get_offers_task(seconds: int):
+    async def loop() -> None:
+        while True:
+            await get_offers()
+            await asyncio.sleep(seconds)
 
-            asyncio.ensure_future(loop())
-
-        return wrapped
-
-    return decorator
-
-
-@repeat_every(seconds=settings.offer_refresh_rate_sec)
-async def get_offers_task():
-    await get_offers()
+    asyncio.create_task(loop())
